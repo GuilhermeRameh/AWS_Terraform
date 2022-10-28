@@ -1,1 +1,4 @@
 SECRET_KEYS.csv
+LOCAL_SECRET_KEYS.csv
+LOCAL_SECRET_KEYS.csv.pub
+keyfingerprint.txt
