@@ -2,3 +2,7 @@ SECRET_KEYS.csv
 id_rsa
 id_rsa.pub
 Guilherme.pem
+terraform.tfstate
+terraform.tfstate.backup
+awscliv2.zip
+aws
