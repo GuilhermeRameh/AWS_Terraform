@@ -99,7 +99,7 @@ while START:
                     break
 
             else:
-                sec_gp_name = "default"
+                sec_gp_name = "Sg-allowall"
                 
             console.print(Panel("Por fim, nomeie sua máquina:"))
             inst_name = console.input()

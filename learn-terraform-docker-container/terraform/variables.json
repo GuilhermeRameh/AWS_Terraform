@@ -1,6 +1,38 @@
 {
-    "instances": {},
-    "sec_groups": {},
+    "instances": {
+        "Gui": {
+            "image_id": "ami-08c40ec9ead489470",
+            "instance_type": "t2.micro",
+            "sec_group": "Sg-allowall"
+        },
+        "Sergio": {
+            "image_id": "ami-0149b2da6ceec4bb0",
+            "instance_type": "t2.nano",
+            "sec_group": "Sg-allowall"
+        }
+    },
+    "sec_groups": {
+        "Sg-allowall": {
+            "name": "Sg-allowall",
+            "ingress": [
+                {
+                    "ingress": {
+                        "description": "custom sec group",
+                        "from_port": "0",
+                        "to_port": "0",
+                        "protocol": "tcp",
+                        "ipv6_cidr_blocks": null,
+                        "prefix_list_ids": null,
+                        "self": null,
+                        "security_groups": null,
+                        "cidr_blocks": [
+                            "0.0.0.0/0"
+                        ]
+                    }
+                }
+            ]
+        }
+    },
     "users": {},
     "aws_region": "us-east-1",
     "vpc_cidr_block": "10.0.0.0/16"
