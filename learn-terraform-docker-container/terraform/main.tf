@@ -66,3 +66,19 @@ resource "aws_security_group" "allow" {
   }
 }
 
+resource "aws_iam_user" "user" {
+  for_each = {for user in var.users : user.username => user}
+  name = each.value.username
+}
+
+resource "aws_iam_access_key" "user" {
+  for_each = {for user in var.users : user.username => user}
+  user = aws_iam_user.user[each.value.username].name
+}
+
+resource "aws_iam_user_login_profile" "profile" {
+  for_each               = {for user in var.users: user.username => user}
+  user                    =  aws_iam_user.user[each.value.username].name
+  password_reset_required =  true
+}
+

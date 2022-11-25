@@ -62,7 +62,7 @@ while START:
         instancia_dict={}
         tela_instancias = Group(
             Panel("O que quer fazer?", title="INSTÂNCIAS", title_align="left"),
-            "(1.) [green]Criar[/]\n(2.) [red]Deletar[/]\n(3.) [yellow]Listar[/]\n(4.) [cyan]Iniciar ou Parar[/]\n('q') Voltar",
+            "(1.) [green]Criar[/]\n(2.) [red]Deletar[/]\n(3.) [yellow]Listar[/]\n('q') Voltar",
         )
         console.print(Panel(tela_instancias), "")
         instancia_act = console.input()
@@ -93,27 +93,10 @@ while START:
                 sec_gp_name = console.input()
 
                 if sec_gp_name not in dict_variables["sec_groups"].keys():
-                    console.print("Nenhum Security Group com esse nome. Criando um novo:")
-
-                    aws_from_port = console.input(f"Digite a porta de origem (from port):")
-                    aws_to_port = console.input(f"Digite a porta de destino (to port):")
-                    aws_protocol = console.input(f"Digite o protocolo (ex: 'tcp'):")
-                    aws_cidr_blocks = console.input(f"Digite o bloco CIDR (ex: '0.0.0.0/0'):")
-
-                    dict_sg = {"ingress" : {"description" : str("custom sec group"), \
-                                                "from_port" : str(aws_from_port), 
-                                                "to_port" : str(aws_to_port),
-                                                "protocol" : str(aws_protocol), 
-                                                "ipv6_cidr_blocks" : None,
-                                                "prefix_list_ids" : None,
-                                                "self" : None,
-                                                "security_groups" : None,
-                                                "cidr_blocks" : [str(aws_cidr_blocks)]}}
-
-                    dict_variables["sec_groups"][sec_gp_name] = {"name": sec_gp_name, "ingress": [dict_sg]}
-
-                    with open("terraform/variables.json", "w") as jsonfile:
-                        jsonfile.write(json.dumps(dict_variables, indent=4))
+                    console.print("[b red]Nenhum Security Group com esse nome. Vá para a aba de SGs e crie um com esse nome, ou use outro SG.")
+                    console.print("Aperte [i red]'Enter'[/] para sair")
+                    input()
+                    break
 
             else:
                 sec_gp_name = "default"
@@ -157,13 +140,13 @@ while START:
             console.print("Aperte [i red]'Enter'[/] para sair")
             input()
 
-        elif instancia_act=='4':
-            console.clear()
-            console.print(Panel("Digite o nome da instância que deseja [green]ligar (start)[/] ou [red]desligar (stop)[/]: "))
-            inst_name_sel = console.input()
-            if inst_name_sel not in dict_variables["instances"].keys():
-                console.print("[b red]Instância não encontrada, você pode checar as instâncias válidas com a opção 'Listar'.")
-                console.input("Aperte [red]'Enter'[/] para continuar")
+        # elif instancia_act=='4':
+        #     console.clear()
+        #     console.print(Panel("Digite o nome da instância que deseja [green]ligar (start)[/] ou [red]desligar (stop)[/]: "))
+        #     inst_name_sel = console.input()
+        #     if inst_name_sel not in dict_variables["instances"].keys():
+        #         console.print("[b red]Instância não encontrada, você pode checar as instâncias válidas com a opção 'Listar'.")
+        #         console.input("Aperte [red]'Enter'[/] para continuar")
         #     else:
         #         with console.status("Fetching Id...", spinner="aesthetic"):
         #             for instance in ec2re.instances.all():
@@ -186,18 +169,43 @@ while START:
 
         if usuarios_act=="1":
             # criar
-            continue
+            console.clear()
+            console.print(Panel("Digite o nome do usuário que deseja [green]Criar[/]: "))
+            console.print("[i](ele será criado com as permissões padrões de usuário aws)[/]")
+            new_user_name = console.input()
+            if new_user_name not in dict_variables["users"].keys():
+                dict_variables["users"][new_user_name]={"username":new_user_name}
+                with open("terraform/variables.json", "w") as jsonfile:
+                    jsonfile.write(json.dumps(dict_variables, indent=4))
+
+                with console.status("Criando Usuário...", spinner="aesthetic"):
+                    os.system("cd terraform && terraform init && terraform apply -var-file=variables.json -auto-approve")
+                console.print("[b red]ATENÇÃO! Procure pela chave de acesso gerada, e copie para um local seguro!\nPara acessar este usuário criado, vá para o site da AWS, e faça login com o nome que você escolheu e a senha gerada.\n Você será pedido para trocar a senha imediatamente.")
+                console.print("Quando estiver pronto, aperte [i red]'Enter'[/] para sair")
+                input()
+            else:
+                console.print("[b red]Este usuário já existe, crie com outro nome.")
+                console.input("Aperte [red]'Enter'[/] para continuar")
+                input()              
         
         elif usuarios_act=="2":
             # deletar
-            continue
-            # console.clear()
-            # console.print(Panel("Digite o nome do usuário que deseja [r]apagar[/]: "))
-            # user_del = console.input()
-            # if user_del not in dict_users["instances"]:
-            #     console.print("[b red]Instância não encontrada, você pode checar as instâncias válidas com a opção 'Listar'.")
-            #     console.input("Aperte [red]'Enter'[/] para continuar")
-        
+            console.clear()
+            console.print(Panel("Digite o nome do usuário que deseja [r]apagar[/]: "))
+            user_del = console.input()
+            if user_del not in dict_variables["users"]:
+                console.print("[b red]Instância não encontrada, você pode checar as instâncias válidas com a opção 'Listar'.")
+                console.input("Aperte [red]'Enter'[/] para continuar")
+            else:
+                if Confirm.ask(f"[b red]Você está prestes a deletar o usuário {user_del} e suas credenciais, tem certeza?[/]"):
+                    dict_variables["users"].pop(user_del)
+                    with open("terraform/variables.json", "w") as jsonfile:
+                        jsonfile.write(json.dumps(dict_variables, indent=4))
+
+                    with console.status("Deletando usuário...", spinner="aesthetic"):
+                        os.system("cd terraform && terraform init && terraform apply -var-file=variables.json -auto-approve")
+                    
+
         elif usuarios_act=="3":
             console.clear()
             with console.status("Listando Usuários ...", spinner="aesthetic"):

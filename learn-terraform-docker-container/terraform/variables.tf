@@ -36,11 +36,8 @@ variable "sec_groups"{
   }))
 }
 
-variable "aws_user_name" {
-  type        = list(object({
+variable "users"{
+  type        = map(object({
     username = string
-    policy_action = list(string)
-    policy_resource = string
-    policy_effect = string
   }))
 }
