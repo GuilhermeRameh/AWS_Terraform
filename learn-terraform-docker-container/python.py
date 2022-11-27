@@ -38,8 +38,21 @@ ec2client = session.client('ec2')
 ec2iam = session.client('iam')
 ec2re = session.resource('ec2')
 
-with open("terraform/variables.json", "r") as jsonfile:
-    dict_variables = json.load(jsonfile)
+if os.path.exists("terraform/variables.json"):
+    with open("terraform/variables.json", "r") as jsonfile:
+        dict_variables = json.load(jsonfile)
+else:
+    dict_variables = {{
+        "instances": {
+        },
+        "sec_groups": {
+        },
+        "users": {},
+        "aws_region": None,
+        "vpc_cidr_block": None
+    }}
+    with open("terraform/variables.json", "w") as jsonfile:
+        jsonfile.write(json.dumps(dict_variables, indent=4))
 
 dict_variables["aws_region"] = region
 dict_variables["vpc_cidr_block"] = vpc_cidr_block
