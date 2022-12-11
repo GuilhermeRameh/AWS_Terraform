@@ -7,6 +7,7 @@ Para funcionamento da aplicação, é preciso que o usuáro tenha os seguintes p
 terraform -> version 0.10.1
 boto3 -> version 1.26.16
 rich -> version 12.6.0
+aws-cli
 ```
 
 ### 1.1 Instalando pacotes:
@@ -17,6 +18,7 @@ Para os outros pacotes, use os códigos abaixo:
 ```
 pip install boto3==1.26.16
 pip install rich==12.6.0
+sudo apt-get install awscli
 ```
 
 ## 2. Iniciando o programa
